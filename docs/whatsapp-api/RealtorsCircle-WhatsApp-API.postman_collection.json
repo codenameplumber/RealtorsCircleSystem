@@ -1,0 +1,293 @@
+{
+  "info": {
+    "name": "Realtors Circle — WhatsApp API (n8n)",
+    "description": "Internal API called exclusively by n8n WhatsApp workflows. Every request requires the X-API-Key header. Identity within a persona is resolved by phone number, not a bearer token.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "apikey",
+    "apikey": [
+      { "key": "key", "value": "X-API-Key", "type": "string" },
+      { "key": "value", "value": "{{api_key}}", "type": "string" },
+      { "key": "in", "value": "header", "type": "string" }
+    ]
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://127.0.0.1:8000" },
+    { "key": "api_key", "value": "REPLACE_WITH_WHATSAPP_API_KEY" },
+    { "key": "realtor_phone", "value": "2348011112222" },
+    { "key": "referring_realtor_phone", "value": "2348022223333" },
+    { "key": "agent_phone", "value": "2348033334444" },
+    { "key": "agency_phone", "value": "2348044445555" },
+    { "key": "property_id", "value": "1" },
+    { "key": "appointment_id", "value": "1" }
+  ],
+  "item": [
+    {
+      "name": "Realtor",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/api/wa/v1/realtor/register",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"first_name\": \"Ada\",\n  \"last_name\": \"Obi\",\n  \"email\": \"ada.obi@example.com\",\n  \"phone\": \"{{realtor_phone}}\",\n  \"specialization\": \"Residential\",\n  \"referral_code\": \"\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get / Resend KYC Link",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/api/wa/v1/realtor/kyc-link",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"phone\": \"{{realtor_phone}}\"\n}" }
+          }
+        },
+        {
+          "name": "Identify (login)",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/api/wa/v1/realtor/identify",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"phone\": \"{{realtor_phone}}\"\n}" }
+          }
+        },
+        {
+          "name": "Create Property",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/api/wa/v1/realtor/properties",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"{{realtor_phone}}\",\n  \"title\": \"3 Bedroom Flat in Lekki\",\n  \"type\": \"Flat\",\n  \"description\": \"Spacious 3 bedroom flat with modern finishing.\",\n  \"listing_type\": \"For Sale\",\n  \"street\": \"12 Admiralty Way\",\n  \"neigborhood\": \"Lekki Phase 1\",\n  \"city\": \"Lagos\",\n  \"state\": \"Lagos\",\n  \"localarea\": \"Eti-Osa\",\n  \"price\": 45000000,\n  \"amenities\": [\"parking\", \"security\", \"generator\"]\n}"
+            }
+          }
+        },
+        {
+          "name": "Get / Resend Photo Upload Link",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/api/wa/v1/realtor/properties/{{property_id}}/photo-link",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"phone\": \"{{realtor_phone}}\"\n}" }
+          }
+        },
+        {
+          "name": "Update Property Status",
+          "request": {
+            "method": "PATCH",
+            "url": "{{base_url}}/api/wa/v1/realtor/properties/{{property_id}}/status",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"phone\": \"{{realtor_phone}}\",\n  \"status\": \"sold\"\n}" }
+          }
+        },
+        {
+          "name": "List Appointments",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/wa/v1/realtor/appointments?phone={{realtor_phone}}"
+          }
+        },
+        {
+          "name": "Approve Appointment",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/api/wa/v1/realtor/appointments/{{appointment_id}}/approve",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"phone\": \"{{realtor_phone}}\"\n}" }
+          }
+        },
+        {
+          "name": "Reject Appointment",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/api/wa/v1/realtor/appointments/{{appointment_id}}/reject",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"phone\": \"{{realtor_phone}}\",\n  \"reason\": \"Client rescheduled to another agent\"\n}" }
+          }
+        },
+        {
+          "name": "Search Properties",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/wa/v1/realtor/search?q=lekki&state=Lagos&max_price=50000000"
+          }
+        },
+        {
+          "name": "Stats",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/wa/v1/realtor/stats?phone={{realtor_phone}}"
+          }
+        },
+        {
+          "name": "Weekly Report",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/wa/v1/realtor/weekly-report?phone={{realtor_phone}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "In-House Agent",
+      "item": [
+        {
+          "name": "Identify",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/api/wa/v1/agent/identify",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"phone\": \"{{agent_phone}}\"\n}" }
+          }
+        },
+        {
+          "name": "Pending Realtors (in my LGA)",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/wa/v1/agent/realtors/pending?phone={{agent_phone}}"
+          }
+        },
+        {
+          "name": "Approve Realtor",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/api/wa/v1/agent/realtors/1/approve",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"phone\": \"{{agent_phone}}\"\n}" }
+          }
+        },
+        {
+          "name": "Reject Realtor",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/api/wa/v1/agent/realtors/1/reject",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"phone\": \"{{agent_phone}}\",\n  \"reason\": \"KYC documents unreadable, please resubmit clearer photos\"\n}" }
+          }
+        },
+        {
+          "name": "Pending Properties (in my LGA)",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/wa/v1/agent/properties/pending?phone={{agent_phone}}"
+          }
+        },
+        {
+          "name": "Approve Property",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/api/wa/v1/agent/properties/{{property_id}}/approve",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"phone\": \"{{agent_phone}}\"\n}" }
+          }
+        },
+        {
+          "name": "Reject Property",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/api/wa/v1/agent/properties/{{property_id}}/reject",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"phone\": \"{{agent_phone}}\",\n  \"reason\": \"Photos do not match the listing description\"\n}" }
+          }
+        },
+        {
+          "name": "Update Property Status",
+          "request": {
+            "method": "PATCH",
+            "url": "{{base_url}}/api/wa/v1/agent/properties/{{property_id}}/status",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"phone\": \"{{agent_phone}}\",\n  \"status\": \"rented\"\n}" }
+          }
+        },
+        {
+          "name": "Appointments (LGA feed)",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/wa/v1/agent/appointments?phone={{agent_phone}}"
+          }
+        },
+        {
+          "name": "Weekly Stats",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/wa/v1/agent/stats/weekly?phone={{agent_phone}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Agency",
+      "item": [
+        {
+          "name": "Identify",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/api/wa/v1/agency/identify",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"phone\": \"{{agency_phone}}\"\n}" }
+          }
+        },
+        {
+          "name": "Network",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/wa/v1/agency/network?phone={{agency_phone}}"
+          }
+        },
+        {
+          "name": "Earnings",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/wa/v1/agency/earnings?phone={{agency_phone}}"
+          }
+        },
+        {
+          "name": "Weekly Stats",
+          "request": {
+            "method": "GET",
+            "url": "{{base_url}}/api/wa/v1/agency/stats/weekly?phone={{agency_phone}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Error Cases",
+      "item": [
+        {
+          "name": "Missing API Key -> 401",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/api/wa/v1/realtor/identify",
+            "auth": { "type": "noauth" },
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"phone\": \"{{realtor_phone}}\"\n}" }
+          }
+        },
+        {
+          "name": "Unknown Phone -> 404",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/api/wa/v1/realtor/identify",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"phone\": \"2348000000000\"\n}" }
+          }
+        },
+        {
+          "name": "Reject Without Reason -> 422",
+          "request": {
+            "method": "POST",
+            "url": "{{base_url}}/api/wa/v1/agent/realtors/1/reject",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"phone\": \"{{agent_phone}}\"\n}" }
+          }
+        }
+      ]
+    }
+  ]
+}
